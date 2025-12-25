@@ -1,0 +1,4 @@
+import os
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+SYMBOLS = ["RELIANCE","TCS","INFY","HDFCBANK","SBIN"]

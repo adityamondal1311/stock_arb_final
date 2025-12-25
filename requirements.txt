@@ -7,3 +7,4 @@ pydantic
 apscheduler
 python-dotenv
 psycopg2-binary
+

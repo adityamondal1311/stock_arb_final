@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+redis
+asyncpg
+yfinance
+pandas
+aiofiles
+python-dotenv

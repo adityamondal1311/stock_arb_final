@@ -1,25 +1,32 @@
 import asyncio
+import logging
 from ..config import STOCKS, ARBITRAGE_THRESHOLD
-from ..redis_client import redis
+from ..redis_client import r
 from ..database import save_arbitrage
+
+logger = logging.getLogger(__name__)
+
 
 async def arbitrage_engine():
     while True:
-        for nse, bse in STOCKS:
-            p1 = await redis.get(nse)
-            p2 = await redis.get(bse)
+        try:
+            for nse, bse in STOCKS:
+                p1 = await r.get(nse)
+                p2 = await r.get(bse)
 
-            if not p1 or not p2:
-                continue
+                if p1 is None or p2 is None:
+                    continue
 
-            p1, p2 = float(p1), float(p2)
-            diff = abs(p1 - p2)
+                p1, p2 = float(p1), float(p2)
+                diff = abs(p1 - p2)
 
-            if diff >= ARBITRAGE_THRESHOLD:
-                symbol = nse.replace(".NS", "")
-                await save_arbitrage(symbol, p1, p2, diff)
-
+                if diff >= ARBITRAGE_THRESHOLD:
+                    symbol = nse.replace(".NS", "")
+                    await save_arbitrage(symbol, p1, p2, diff)
+        except Exception as exc:
+            logger.error("Arbitrage engine loop error: %s", exc)
         await asyncio.sleep(1)
+
 
 def start_arb_engine():
     asyncio.get_event_loop().create_task(arbitrage_engine())

@@ -1,4 +1,4 @@
-import redis.asyncio as redis
+import redis.asyncio as aioredis
 from .config import REDIS_URL
 
-redis = redis.from_url(REDIS_URL, decode_responses=True)
+r = aioredis.from_url(REDIS_URL, decode_responses=True)

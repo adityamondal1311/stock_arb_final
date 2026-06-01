@@ -1,20 +1,13 @@
-# Use Node for building the React app
-FROM node:18
+FROM node:18-alpine
 
-# Set app directory
 WORKDIR /app
-
-# Copy package files
 COPY package.json package-lock.json* ./
-
-# Install dependencies
 RUN npm install
 
-# Copy the rest of the files
 COPY . .
 
-# Expose Vite dev port
-EXPOSE 5173
+RUN adduser -D appuser && chown -R appuser /app
+USER appuser
 
-# Start the development server
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+EXPOSE 5173
+CMD ["npm", "run", "dev"]

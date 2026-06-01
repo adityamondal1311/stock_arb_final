@@ -1,8 +1,7 @@
-fastapi
-uvicorn
-redis
-asyncpg
-yfinance
-pandas
-aiofiles
-python-dotenv
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+redis==5.0.4
+asyncpg==0.29.0
+yfinance==1.0
+pandas==2.2.2
+python-dotenv==1.0.1

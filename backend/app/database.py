@@ -10,7 +10,7 @@ _SCHEMA = (Path(__file__).parent / "init_schema.sql").read_text()
 
 async def init_db():
     global pool
-    pool = await asyncpg.create_pool(DB_URL, min_size=2, max_size=10)
+    pool = await asyncpg.create_pool(DB_URL, min_size=2, max_size=10, statement_cache_size=0)
     async with pool.acquire() as con:
         await con.execute(_SCHEMA)
     logger.info("Database pool ready, schema applied")

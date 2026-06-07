@@ -1,10 +1,21 @@
 import asyncio
 import logging
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, time, timezone, timedelta
 import requests
 import yfinance as yf
 from ..config import STOCKS, FETCH_INTERVAL, BSE_SCRIP_CODES
 from ..redis_client import r
+
+_IST = timezone(timedelta(hours=5, minutes=30))
+
+
+def _is_market_open() -> bool:
+    now = datetime.now(_IST)
+    if now.weekday() >= 5:  # Saturday=5, Sunday=6
+        return False
+    t = now.time()
+    return time(9, 15) <= t <= time(15, 30)
 
 logger = logging.getLogger(__name__)
 _executor = ThreadPoolExecutor(max_workers=10)
@@ -69,6 +80,10 @@ def _fetch_bse_price(bse_symbol: str) -> tuple[str, float | None]:
 
 async def price_fetcher():
     while True:
+        if not _is_market_open():
+            logger.info("Market closed — skipping fetch")
+            await asyncio.sleep(300)
+            continue
         try:
             nse_symbols = [nse for nse, _ in STOCKS]
             bse_symbols = [bse for _, bse in STOCKS]

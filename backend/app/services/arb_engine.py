@@ -25,7 +25,7 @@ async def arbitrage_engine():
                     await save_arbitrage(symbol, p1, p2, diff)
         except Exception as exc:
             logger.error("Arbitrage engine loop error: %s", exc)
-        await asyncio.sleep(1)
+        await asyncio.sleep(30)
 
 
 def start_arb_engine():

@@ -19,7 +19,7 @@ async def websocket_stream(websocket: WebSocket):
                 result[nse] = await r.get(nse)
                 result[bse] = await r.get(bse)
             await websocket.send_json(result)
-            await asyncio.sleep(1)
+            await asyncio.sleep(30)
     except WebSocketDisconnect:
         logger.info("WebSocket client disconnected")
     except Exception as exc:

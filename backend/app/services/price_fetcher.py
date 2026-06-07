@@ -20,7 +20,7 @@ def _batch_download(symbols: list[str]) -> dict[str, float]:
     ticker_str = " ".join(symbols)
     for attempt in range(2):
         try:
-            data = yf.download(ticker_str, period="1d", interval="1m", progress=False,
+            data = yf.download(ticker_str, period="5d", interval="1d", progress=False,
                                auto_adjust=True, multi_level_index=False)
             if data.empty:
                 logger.warning("Empty batch response on attempt %d (first: %s)", attempt + 1, symbols[0])
@@ -33,6 +33,7 @@ def _batch_download(symbols: list[str]) -> dict[str, float]:
                     val = data[col].dropna()
                     if not val.empty:
                         prices[sym] = float(val.iloc[-1])
+            logger.info("Batch result for %s…: %d/%d prices fetched", symbols[:3], len(prices), len(symbols))
             return prices
         except Exception as exc:
             logger.warning("Batch download attempt %d failed: %s", attempt + 1, exc)

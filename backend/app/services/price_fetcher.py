@@ -21,26 +21,20 @@ def _batch_download(symbols: list[str]) -> dict[str, float]:
     for attempt in range(2):
         try:
             data = yf.download(ticker_str, period="5d", interval="1d", progress=False,
-                               auto_adjust=True, multi_level_index=False)
+                               auto_adjust=True)
             if data.empty:
                 logger.warning("Empty batch response on attempt %d (first: %s)", attempt + 1, symbols[0])
                 continue
-            logger.info("yf version: %s", yf.__version__)
-            logger.info("Columns: %s", data.columns.tolist())
-            logger.info("Shape: %s", data.shape)
-            logger.info("Head:\n%s", data.head(2).to_string())
             prices = {}
             for sym in symbols:
-                # yfinance column format varies by version:
-                # 1.0 multi-symbol: sym name directly ("RELIANCE.NS")
-                # 0.2.x multi-symbol: "Close_RELIANCE.NS"
-                # single-symbol: "Close"
-                for col in (f"Close_{sym}", sym, "Close"):
+                try:
+                    col = ("Close", sym)
                     if col in data.columns:
                         val = data[col].dropna()
                         if not val.empty:
                             prices[sym] = float(val.iloc[-1])
-                        break
+                except Exception as e:
+                    logger.warning("Price extraction failed for %s: %s", sym, e)
             logger.info("Batch result for %s…: %d/%d prices fetched", symbols[:3], len(prices), len(symbols))
             return prices
         except Exception as exc:

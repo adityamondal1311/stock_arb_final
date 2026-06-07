@@ -56,7 +56,7 @@ def _fetch_bse_price(bse_symbol: str) -> tuple[str, float | None]:
     try:
         url = (
             "https://api.bseindia.com/BseIndiaAPI/api/getScripHeaderData/w"
-            f"?Debtflag=&scripcode={scrip_code}&seriesid="
+            f"?Debtflag=&scripcode={scrip_code}&seriesid=EQ"
         )
         resp = _bse_session.get(url, timeout=10)
         resp.raise_for_status()

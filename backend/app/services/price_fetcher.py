@@ -25,6 +25,10 @@ def _batch_download(symbols: list[str]) -> dict[str, float]:
             if data.empty:
                 logger.warning("Empty batch response on attempt %d (first: %s)", attempt + 1, symbols[0])
                 continue
+            logger.info("yf version: %s", yf.__version__)
+            logger.info("Columns: %s", data.columns.tolist())
+            logger.info("Shape: %s", data.shape)
+            logger.info("Head:\n%s", data.head(2).to_string())
             prices = {}
             for sym in symbols:
                 # yfinance column format varies by version:

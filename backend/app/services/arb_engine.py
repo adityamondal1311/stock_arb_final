@@ -11,6 +11,8 @@ async def arbitrage_engine():
     while True:
         try:
             for nse, bse in STOCKS:
+                if bse is None:
+                    continue
                 p1 = await r.get(nse)
                 p2 = await r.get(bse)
 

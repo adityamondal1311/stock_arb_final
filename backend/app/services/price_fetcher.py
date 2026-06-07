@@ -46,7 +46,7 @@ async def price_fetcher():
     while True:
         try:
             nse_symbols = [nse for nse, _ in STOCKS]
-            bse_symbols = [bse for _, bse in STOCKS]
+            bse_symbols = [bse for _, bse in STOCKS if bse is not None]
             loop = asyncio.get_event_loop()
 
             tasks = [

@@ -27,12 +27,16 @@ def _batch_download(symbols: list[str]) -> dict[str, float]:
                 continue
             prices = {}
             for sym in symbols:
-                # Single-symbol download returns plain "Close"; multi-symbol returns "Close_SYM"
-                col = "Close" if len(symbols) == 1 else f"Close_{sym}"
-                if col in data.columns:
-                    val = data[col].dropna()
-                    if not val.empty:
-                        prices[sym] = float(val.iloc[-1])
+                # yfinance column format varies by version:
+                # 1.0 multi-symbol: sym name directly ("RELIANCE.NS")
+                # 0.2.x multi-symbol: "Close_RELIANCE.NS"
+                # single-symbol: "Close"
+                for col in (f"Close_{sym}", sym, "Close"):
+                    if col in data.columns:
+                        val = data[col].dropna()
+                        if not val.empty:
+                            prices[sym] = float(val.iloc[-1])
+                        break
             logger.info("Batch result for %s…: %d/%d prices fetched", symbols[:3], len(prices), len(symbols))
             return prices
         except Exception as exc:

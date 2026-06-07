@@ -9,8 +9,8 @@ FETCH_INTERVAL = int(os.getenv("FETCH_INTERVAL", "30"))
 ARBITRAGE_THRESHOLD = float(os.getenv("ARBITRAGE_THRESHOLD", "1"))
 
 STOCKS = [
-    ("ADANIENT.NS",   None),             # ADANIENT.BO not on Yahoo Finance
-    ("ADANIPORTS.NS", None),             # ADANIPORTS.BO not on Yahoo Finance
+    ("ADANIENT.NS",   "ADANIENT.BO"),
+    ("ADANIPORTS.NS", "ADANIPORTS.BO"),
     ("APOLLOHOSP.NS", "APOLLOHOSP.BO"),
     ("ASIANPAINT.NS", "ASIANPAINT.BO"),
     ("AXISBANK.NS",   "AXISBANK.BO"),
@@ -18,11 +18,11 @@ STOCKS = [
     ("BAJAJFINSV.NS", "BAJAJFINSV.BO"),
     ("BAJFINANCE.NS", "BAJFINANCE.BO"),
     ("BEL.NS",        "BEL.BO"),
-    ("BHARTIARTL.NS", None),             # BHARTIARTL.BO not on Yahoo Finance
-    ("BPCL.NS",       None),             # BPCL.BO not on Yahoo Finance
+    ("BHARTIARTL.NS", "BHARTIARTL.BO"),
+    ("BPCL.NS",       "BPCL.BO"),
     ("BRITANNIA.NS",  "BRITANNIA.BO"),
     ("CIPLA.NS",      "CIPLA.BO"),
-    ("COALINDIA.NS",  None),             # COALINDIA.BO not on Yahoo Finance
+    ("COALINDIA.NS",  "COALINDIA.BO"),
     ("DIVISLAB.NS",   "DIVISLAB.BO"),
     ("DRREDDY.NS",    "DRREDDY.BO"),
     ("EICHERMOT.NS",  "EICHERMOT.BO"),
@@ -43,14 +43,14 @@ STOCKS = [
     ("M&M.NS",        "M&M.BO"),
     ("MARUTI.NS",     "MARUTI.BO"),
     ("NESTLEIND.NS",  "NESTLEIND.BO"),
-    ("NTPC.NS",       None),             # NTPC.BO not on Yahoo Finance
-    ("ONGC.NS",       None),             # ONGC.BO not on Yahoo Finance
-    ("POWERGRID.NS",  None),             # POWERGRID.BO not on Yahoo Finance
+    ("NTPC.NS",       "NTPC.BO"),
+    ("ONGC.NS",       "ONGC.BO"),
+    ("POWERGRID.NS",  "POWERGRID.BO"),
     ("RELIANCE.NS",   "RELIANCE.BO"),
     ("SBIN.NS",       "SBIN.BO"),
     ("SHRIRAMFIN.NS", "SHRIRAMFIN.BO"),
     ("SUNPHARMA.NS",  "SUNPHARMA.BO"),
-    ("TATAMOTORS.NS", None),             # TATAMOTORS.BO not on Yahoo Finance
+    ("TATAMOTORS.NS", "TATAMOTORS.BO"),
     ("TATASTEEL.NS",  "TATASTEEL.BO"),
     ("TCS.NS",        "TCS.BO"),
     ("TECHM.NS",      "TECHM.BO"),
@@ -60,3 +60,56 @@ STOCKS = [
     ("ULTRACEMCO.NS", "ULTRACEMCO.BO"),
     ("WIPRO.NS",      "WIPRO.BO"),
 ]
+
+BSE_SCRIP_CODES = {
+    "ADANIENT.BO":   "512599",
+    "ADANIPORTS.BO": "532921",
+    "APOLLOHOSP.BO": "508869",
+    "ASIANPAINT.BO": "500820",
+    "AXISBANK.BO":   "532215",
+    "BAJAJ-AUTO.BO": "532977",
+    "BAJAJFINSV.BO": "532978",
+    "BAJFINANCE.BO": "532648",
+    "BEL.BO":        "500049",
+    "BHARTIARTL.BO": "532454",
+    "BPCL.BO":       "500547",
+    "BRITANNIA.BO":  "500825",
+    "CIPLA.BO":      "500087",
+    "COALINDIA.BO":  "533278",
+    "DIVISLAB.BO":   "532488",
+    "DRREDDY.BO":    "500124",
+    "EICHERMOT.BO":  "505200",
+    "GRASIM.BO":     "500300",
+    "HCLTECH.BO":    "532281",
+    "HDFCBANK.BO":   "500180",
+    "HDFCLIFE.BO":   "540777",
+    "HEROMOTOCO.BO": "500182",
+    "HINDALCO.BO":   "500440",
+    "HINDUNILVR.BO": "500696",
+    "ICICIBANK.BO":  "532174",
+    "INDUSINDBK.BO": "532187",
+    "INFY.BO":       "500209",
+    "ITC.BO":        "500875",
+    "JSWSTEEL.BO":   "532286",
+    "KOTAKBANK.BO":  "500247",
+    "LT.BO":         "500510",
+    "M&M.BO":        "500520",
+    "MARUTI.BO":     "532500",
+    "NESTLEIND.BO":  "500790",
+    "NTPC.BO":       "532555",
+    "ONGC.BO":       "500312",
+    "POWERGRID.BO":  "532898",
+    "RELIANCE.BO":   "500325",
+    "SBIN.BO":       "500112",
+    "SHRIRAMFIN.BO": "511218",
+    "SUNPHARMA.BO":  "524715",
+    "TATAMOTORS.BO": "500570",
+    "TATASTEEL.BO":  "500470",
+    "TCS.BO":        "532540",
+    "TECHM.BO":      "532755",
+    "TITAN.BO":      "500114",
+    "TATACONSUM.BO": "500800",
+    "TRENT.BO":      "500251",
+    "ULTRACEMCO.BO": "532538",
+    "WIPRO.BO":      "507685",
+}

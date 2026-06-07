@@ -17,8 +17,7 @@ async def websocket_stream(websocket: WebSocket):
             result = {}
             for nse, bse in STOCKS:
                 result[nse] = await r.get(nse)
-                if bse is not None:
-                    result[bse] = await r.get(bse)
+                result[bse] = await r.get(bse)
             await websocket.send_json(result)
             await asyncio.sleep(1)
     except WebSocketDisconnect:

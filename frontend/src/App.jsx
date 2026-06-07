@@ -45,8 +45,8 @@ export default function App() {
       {/* Main */}
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-6">
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <LivePricesTable />
           <ArbitragePanel />
+          <LivePricesTable />
         </div>
       </main>
 

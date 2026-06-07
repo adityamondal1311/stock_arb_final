@@ -6,7 +6,14 @@ from ..config import STOCKS, FETCH_INTERVAL
 from ..redis_client import r
 
 logger = logging.getLogger(__name__)
-_executor = ThreadPoolExecutor(max_workers=4)
+_executor = ThreadPoolExecutor(max_workers=10)
+
+_BATCH_SIZE = 10
+
+
+def _chunked(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
 
 
 def _batch_download(symbols: list[str]) -> dict[str, float]:
@@ -16,11 +23,12 @@ def _batch_download(symbols: list[str]) -> dict[str, float]:
             data = yf.download(ticker_str, period="1d", interval="1m", progress=False,
                                auto_adjust=True, multi_level_index=False)
             if data.empty:
-                logger.warning("Empty batch response on attempt %d", attempt + 1)
+                logger.warning("Empty batch response on attempt %d (first: %s)", attempt + 1, symbols[0])
                 continue
             prices = {}
             for sym in symbols:
-                col = f"Close_{sym}"
+                # Single-symbol download returns plain "Close"; multi-symbol returns "Close_SYM"
+                col = "Close" if len(symbols) == 1 else f"Close_{sym}"
                 if col in data.columns:
                     val = data[col].dropna()
                     if not val.empty:
@@ -37,16 +45,25 @@ async def price_fetcher():
             nse_symbols = [nse for nse, _ in STOCKS]
             bse_symbols = [bse for _, bse in STOCKS]
             loop = asyncio.get_event_loop()
-            nse_prices, bse_prices = await asyncio.gather(
-                loop.run_in_executor(_executor, _batch_download, nse_symbols),
-                loop.run_in_executor(_executor, _batch_download, bse_symbols),
-            )
-            all_prices = {**nse_prices, **bse_prices}
+
+            tasks = [
+                loop.run_in_executor(_executor, _batch_download, chunk)
+                for chunk in _chunked(nse_symbols, _BATCH_SIZE)
+            ] + [
+                loop.run_in_executor(_executor, _batch_download, chunk)
+                for chunk in _chunked(bse_symbols, _BATCH_SIZE)
+            ]
+
+            results = await asyncio.gather(*tasks)
+            all_prices = {}
+            for chunk_prices in results:
+                all_prices.update(chunk_prices)
+
             if all_prices:
                 for symbol, price in all_prices.items():
                     await r.set(symbol, price)
             else:
-                logger.warning("No prices returned from either batch — skipping Redis update")
+                logger.warning("No prices returned from any batch — skipping Redis update")
         except Exception as exc:
             logger.error("Price fetcher loop error: %s", exc)
         await asyncio.sleep(FETCH_INTERVAL)

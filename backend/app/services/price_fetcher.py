@@ -9,32 +9,44 @@ logger = logging.getLogger(__name__)
 _executor = ThreadPoolExecutor(max_workers=4)
 
 
-def _download_price(symbol: str) -> float | None:
-    try:
-        data = yf.download(symbol, period="1d", interval="1m", progress=False,
-                           auto_adjust=True, multi_level_index=False)
-        if not data.empty:
-            return float(data["Close"].iloc[-1])
-    except Exception as exc:
-        logger.warning("yfinance fetch failed for %s: %s", symbol, exc)
-    return None
-
-
-async def fetch_stock(symbol: str) -> float | None:
-    loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(_executor, _download_price, symbol)
+def _batch_download(symbols: list[str]) -> dict[str, float]:
+    ticker_str = " ".join(symbols)
+    for attempt in range(2):
+        try:
+            data = yf.download(ticker_str, period="1d", interval="1m", progress=False,
+                               auto_adjust=True, multi_level_index=False)
+            if data.empty:
+                logger.warning("Empty batch response on attempt %d", attempt + 1)
+                continue
+            prices = {}
+            for sym in symbols:
+                col = f"Close_{sym}"
+                if col in data.columns:
+                    val = data[col].dropna()
+                    if not val.empty:
+                        prices[sym] = float(val.iloc[-1])
+            return prices
+        except Exception as exc:
+            logger.warning("Batch download attempt %d failed: %s", attempt + 1, exc)
+    return {}
 
 
 async def price_fetcher():
     while True:
         try:
-            for nse, bse in STOCKS:
-                nse_price = await fetch_stock(nse)
-                bse_price = await fetch_stock(bse)
-                if nse_price is not None:
-                    await r.set(nse, nse_price)
-                if bse_price is not None:
-                    await r.set(bse, bse_price)
+            nse_symbols = [nse for nse, _ in STOCKS]
+            bse_symbols = [bse for _, bse in STOCKS]
+            loop = asyncio.get_event_loop()
+            nse_prices, bse_prices = await asyncio.gather(
+                loop.run_in_executor(_executor, _batch_download, nse_symbols),
+                loop.run_in_executor(_executor, _batch_download, bse_symbols),
+            )
+            all_prices = {**nse_prices, **bse_prices}
+            if all_prices:
+                for symbol, price in all_prices.items():
+                    await r.set(symbol, price)
+            else:
+                logger.warning("No prices returned from either batch — skipping Redis update")
         except Exception as exc:
             logger.error("Price fetcher loop error: %s", exc)
         await asyncio.sleep(FETCH_INTERVAL)

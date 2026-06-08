@@ -4,6 +4,8 @@
 
 🔗 **Live Demo:** [stock-arb-final.vercel.app](https://stock-arb-final.vercel.app)
 
+![ArbScreen Screenshot](assets/stock_screener.png)
+
 ---
 
 ## What It Does

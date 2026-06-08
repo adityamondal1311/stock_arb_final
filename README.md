@@ -168,3 +168,12 @@ Render's free tier uses IPv4 only. Supabase's Transaction pooler uses IPv6 by de
 
 **Why asyncpg `statement_cache_size=0`?**  
 asyncpg caches prepared statements by default. pgBouncer in session mode does not preserve connection state across client sessions the same way a raw Postgres connection does. Setting `statement_cache_size=0` disables prepared statement caching and prevents cache invalidation errors under the pooler.
+
+---
+
+## What I'd Build at Scale
+
+- **Switch to Angel One SmartAPI for real-time data** — eliminates the current ~15-minute yfinance delay; tick-by-tick prices via WebSocket feed instead of polling
+- **Expand to the full F&O segment (~200 stocks)** — Angel One exposes a complete instrument list; scrip codes and symbol mappings can be fetched programmatically rather than hardcoded
+- **Replace Redis polling with pub/sub** — price fetcher publishes to a Redis channel on each update; WebSocket layer subscribes and pushes only on change, cutting unnecessary Redis reads to zero and reducing end-to-end latency from up to 30s to under 1s
+- **Horizontal scaling of the WebSocket layer** — stateless WebSocket workers behind a load balancer, with Redis pub/sub as the shared message bus so any worker can serve any client regardless of which worker received the price update

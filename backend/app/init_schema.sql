@@ -9,3 +9,9 @@ CREATE TABLE IF NOT EXISTS arbitrage (
 
 CREATE INDEX IF NOT EXISTS idx_arbitrage_timestamp ON arbitrage (timestamp DESC);
 CREATE INDEX IF NOT EXISTS idx_arbitrage_symbol    ON arbitrage (symbol);
+
+ALTER TABLE arbitrage ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY IF NOT EXISTS allow_public_read ON arbitrage
+    FOR SELECT TO anon, authenticated
+    USING (true);

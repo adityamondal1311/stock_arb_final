@@ -1,6 +1,9 @@
 # Environment — never commit real credentials
 .env
 
+# Local project notes — not for the public repo
+PROJECT_NOTES.md
+
 # Python
 __pycache__/
 *.py[cod]

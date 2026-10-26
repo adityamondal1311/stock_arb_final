@@ -10,11 +10,9 @@ router = APIRouter(prefix="/prices", tags=["Prices"])
 @router.get("/live")
 async def get_prices():
     try:
-        data = {}
-        for nse, bse in STOCKS:
-            data[nse] = await r.get(nse)
-            data[bse] = await r.get(bse)
-        return data
+        keys = [sym for pair in STOCKS for sym in pair]
+        values = await r.mget(keys)
+        return dict(zip(keys, values))
     except Exception as exc:
         logger.error("Failed to fetch prices: %s", exc)
         raise HTTPException(status_code=503, detail="Price data unavailable")

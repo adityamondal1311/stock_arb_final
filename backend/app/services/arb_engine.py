@@ -10,9 +10,13 @@ logger = logging.getLogger(__name__)
 async def arbitrage_engine():
     while True:
         try:
+            keys = [sym for pair in STOCKS for sym in pair]
+            values = await r.mget(keys)
+            prices = dict(zip(keys, values))
+
             for nse, bse in STOCKS:
-                p1 = await r.get(nse)
-                p2 = await r.get(bse)
+                p1 = prices.get(nse)
+                p2 = prices.get(bse)
 
                 if p1 is None or p2 is None:
                     continue

@@ -14,11 +14,9 @@ async def websocket_stream(websocket: WebSocket):
     logger.info("WebSocket client connected")
     try:
         while True:
-            result = {}
-            for nse, bse in STOCKS:
-                result[nse] = await r.get(nse)
-                result[bse] = await r.get(bse)
-            await websocket.send_json(result)
+            keys = [sym for pair in STOCKS for sym in pair]
+            values = await r.mget(keys)
+            await websocket.send_json(dict(zip(keys, values)))
             await asyncio.sleep(30)
     except WebSocketDisconnect:
         logger.info("WebSocket client disconnected")

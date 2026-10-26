@@ -64,8 +64,8 @@ function PriceCell({ value, prev }) {
   const [dir, setDir] = useState(null);
 
   useEffect(() => {
-    if (prev == null || value == null || prev === value) return;
-    const d = value > prev ? "up" : "down";
+    if (prev == null || value == null || Number(prev) === Number(value)) return;
+    const d = Number(value) > Number(prev) ? "up" : "down";
     setDir(d);
     clearTimeout(flash.current);
     flash.current = setTimeout(() => setDir(null), 800);
@@ -99,10 +99,12 @@ export default function LivePricesTable() {
   const [prices, setPrices]     = useState({});
   const [prevPrices, setPrev]   = useState({});
   const [updatedAt, setUpdatedAt] = useState(null);
+  const pricesRef = useRef({});
 
   useEffect(() => {
     subscribe((data) => {
-      setPrev((p) => ({ ...p, ...prices }));
+      setPrev(pricesRef.current);
+      pricesRef.current = data;
       setPrices(data);
       setUpdatedAt(new Date());
     });

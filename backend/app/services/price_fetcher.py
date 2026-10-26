@@ -87,7 +87,7 @@ async def price_fetcher():
         try:
             nse_symbols = [nse for nse, _ in STOCKS]
             bse_symbols = [bse for _, bse in STOCKS]
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
 
             nse_tasks = [
                 loop.run_in_executor(_executor, _batch_download, chunk)
@@ -120,5 +120,5 @@ async def price_fetcher():
         await asyncio.sleep(FETCH_INTERVAL)
 
 
-def start_price_fetcher():
-    asyncio.get_event_loop().create_task(price_fetcher())
+def start_price_fetcher() -> asyncio.Task:
+    return asyncio.create_task(price_fetcher())

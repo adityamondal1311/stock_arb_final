@@ -32,5 +32,5 @@ async def arbitrage_engine():
         await asyncio.sleep(30)
 
 
-def start_arb_engine():
-    asyncio.get_event_loop().create_task(arbitrage_engine())
+def start_arb_engine() -> asyncio.Task:
+    return asyncio.create_task(arbitrage_engine())
